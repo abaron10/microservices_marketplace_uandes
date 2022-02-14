@@ -1,0 +1,316 @@
+{
+	"info": {
+		"_postman_id": "28c728a0-9ca9-4658-868b-bdda97974766",
+		"name": "proyecto-e2-agenda",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Check ping",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Validate body\", function () {\r",
+							"    var data = pm.response.text();\r",
+							"    pm.expect(data).to.eql(\"pong\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{server}}/agenda/health/ping",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"agenda",
+						"health",
+						"ping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check reset",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{server}}/agenda/reset",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"agenda",
+						"reset"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create agenda",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"uuid\":\"{{order_uuid}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{protocol}}://{{server}}/agenda/sellers/{{seller_uuid}}",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"agenda",
+						"sellers",
+						"{{seller_uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create already agenda",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 412\", function () {\r",
+							"    pm.response.to.have.status(412);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"uuid\":\"{{order_uuid}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{protocol}}://{{server}}/agenda/sellers/{{seller_uuid}}",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"agenda",
+						"sellers",
+						"{{seller_uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create second agenda",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 412\", function () {\r",
+							"    pm.response.to.have.status(412);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"uuid\":\"ghfghfghf\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{protocol}}://{{server}}/agenda/sellers/{{seller_uuid}}",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"agenda",
+						"sellers",
+						"{{seller_uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check agenda",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{server}}/agenda/sellers/{{seller_uuid}}/order/{{order_uuid}}",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"agenda",
+						"sellers",
+						"{{seller_uuid}}",
+						"order",
+						"{{order_uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete agenda",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{server}}/agenda/sellers/{{seller_uuid}}/order/{{order_uuid}}",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"agenda",
+						"sellers",
+						"{{seller_uuid}}",
+						"order",
+						"{{order_uuid}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "server",
+			"value": "localhost:3020",
+			"type": "string"
+		},
+		{
+			"key": "protocol",
+			"value": "http",
+			"type": "string"
+		},
+		{
+			"key": "seller_uuid",
+			"value": "89e3c8eb-18b7-43f4-ab14-79cd737432a3",
+			"type": "string"
+		},
+		{
+			"key": "order_uuid",
+			"value": "56d1e02a-e9a6-4c1b-b36e-1698d79bdb59",
+			"type": "string"
+		}
+	]
+}

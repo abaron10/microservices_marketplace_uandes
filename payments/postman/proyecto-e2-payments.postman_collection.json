@@ -1,0 +1,460 @@
+{
+	"info": {
+		"_postman_id": "be24c94e-4345-4b35-9007-732b4b870042",
+		"name": "proyecto-e2-payments",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Check ping",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Validate body\", function () {\r",
+							"    var data = pm.response.text();\r",
+							"    pm.expect(data).to.eql(\"pong\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{server}}/payments/health/ping",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"payments",
+						"health",
+						"ping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check reset",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{server}}/payments/reset",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"payments",
+						"reset"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create payment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"payment_uuid\", jsonData.paymentId);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"order\": {\r\n        \"uuid\":\"{{order_uuid}}\"\r\n    },\r\n    \"user\": {\r\n        \"uuid\": \"{{user_uuid}}\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{protocol}}://{{server}}/payments",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"payments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create payment same order",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 412\", function () {\r",
+							"    pm.response.to.have.status(412);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"order\": {\r\n        \"uuid\":\"{{order_uuid}}\"\r\n    },\r\n    \"user\": {\r\n        \"uuid\": \"{{user_uuid}}\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{protocol}}://{{server}}/payments",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"payments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create second payment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 412\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"order\": {\r\n        \"uuid\":\"{{order_uuid2}}\"\r\n    },\r\n    \"user\": {\r\n        \"uuid\": \"{{user_uuid}}\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{protocol}}://{{server}}/payments",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"payments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Block payment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 412\", function () {\r",
+							"    pm.response.to.have.status(412);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"order\": {\r\n        \"uuid\":\"{{order_uuid3}}\"\r\n    },\r\n    \"user\": {\r\n        \"uuid\": \"{{user_uuid}}\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{protocol}}://{{server}}/payments",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"payments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check payment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{server}}/payments/{{payment_uuid}}",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"payments",
+						"{{payment_uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check payment by order",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{server}}/payments/orders/{{order_uuid}}",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"payments",
+						"orders",
+						"{{order_uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete payment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{server}}/payments/{{payment_uuid}}",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"payments",
+						"{{payment_uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check payment not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{server}}/payments/{{payment_uuid}}",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"payments",
+						"{{payment_uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check payment by order not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{server}}/payments/orders/{{order_uuid}}",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"payments",
+						"orders",
+						"{{order_uuid}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "server",
+			"value": "localhost:3020",
+			"type": "string"
+		},
+		{
+			"key": "protocol",
+			"value": "http",
+			"type": "string"
+		},
+		{
+			"key": "order_uuid",
+			"value": "89e3c8eb-18b7-43f4-ab14-79cd737432a3",
+			"type": "string"
+		},
+		{
+			"key": "user_uuid",
+			"value": "16225b1f-e9c2-4cac-9e18-81065f3366b0",
+			"type": "string"
+		},
+		{
+			"key": "payment_uuid",
+			"value": ""
+		},
+		{
+			"key": "order_uuid2",
+			"value": "89e3c8eb-18b7-43f4-ab14-79cd737432a4",
+			"type": "string"
+		},
+		{
+			"key": "order_uuid3",
+			"value": "89e3c8eb-18b7-43f4-ab14-79cd737432a5",
+			"type": "string"
+		}
+	]
+}

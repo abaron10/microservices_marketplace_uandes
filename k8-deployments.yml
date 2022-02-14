@@ -1,0 +1,278 @@
+# AGENDA APP
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agenda-app
+  labels:
+    app: agenda-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: agenda-app
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: agenda-app
+    spec:
+      containers:
+        - name: agenda-app
+          image: ghcr.io/misw-4301-desarrollo-apps-en-la-nube/agenda-service-p2:0.1.0
+          ports:
+            - containerPort: 3020
+          imagePullPolicy: Always
+
+---
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: agenda-backend-config
+spec:
+  healthCheck:
+    checkIntervalSec: 30
+    port: 3020
+    type: HTTP
+    requestPath: /agenda/health/ping
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: service-agenda-app
+  annotations:
+    cloud.google.com/backend-config: '{"default": "agenda-backend-config"}'
+spec:
+  type: NodePort
+  selector:
+    app: agenda-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3020
+      # 30000 - 32767
+      nodePort: 31007
+---
+# ORDERS APP
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-app
+  labels:
+    app: orders-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orders-app
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: orders-app
+    spec:
+      containers:
+        - name: orders-app
+          image: ghcr.io/misw-4301-desarrollo-apps-en-la-nube/orders-service-p2:0.1.0
+          ports:
+            - containerPort: 3020
+          imagePullPolicy: Always
+
+---
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: order-backend-config
+spec:
+  healthCheck:
+    checkIntervalSec: 30
+    port: 3020
+    type: HTTP
+    requestPath: /orders/health/ping
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: service-orders-app
+  annotations:
+    cloud.google.com/backend-config: '{"default": "order-backend-config"}'
+spec:
+  type: NodePort
+  selector:
+    app: orders-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3020
+      nodePort: 31008
+
+---
+# PAYMENTS APP
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments-app
+  labels:
+    app: payments-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payments-app
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: payments-app
+    spec:
+      containers:
+        - name: payments-app
+          image: ghcr.io/misw-4301-desarrollo-apps-en-la-nube/payments-service-p2:0.1.0
+          ports:
+            - containerPort: 3020
+          imagePullPolicy: Always
+
+---
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: payments-backend-config
+spec:
+  healthCheck:
+    checkIntervalSec: 30
+    port: 3020
+    type: HTTP
+    requestPath: /payments/health/ping
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: service-payments-app
+  annotations:
+    cloud.google.com/backend-config: '{"default": "payments-backend-config"}'
+spec:
+  type: NodePort
+  selector:
+    app: payments-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3020
+      nodePort: 31009
+
+---
+# SELLERS APP
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sellers-app
+  labels:
+    app: sellers-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sellers-app
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: sellers-app
+    spec:
+      containers:
+        - name: sellers-app
+          image: ghcr.io/misw-4301-desarrollo-apps-en-la-nube/sellers-service-p2:0.1.0
+          ports:
+            - containerPort: 3020
+          imagePullPolicy: Always
+
+---
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: sellers-backend-config
+spec:
+  healthCheck:
+    checkIntervalSec: 30
+    port: 3020
+    type: HTTP
+    requestPath: /sellers/health/ping
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: service-sellers-app
+  annotations:
+    cloud.google.com/backend-config: '{"default": "sellers-backend-config"}'
+spec:
+  type: NodePort
+  selector:
+    app: sellers-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3020
+      nodePort: 31010
+
+# INGRESS
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gateway-ingress
+  labels:
+    name: gateway-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: /agenda
+        backend:
+          service:
+            name: service-agenda-app
+            port: 
+              number: 80
+      - pathType: Prefix
+        path: /orders
+        backend:
+          service:
+            name: service-orders-app
+            port: 
+              number: 80
+      - pathType: Prefix
+        path: /payments
+        backend:
+          service:
+            name: service-payments-app
+            port: 
+              number: 80
+      - pathType: Prefix
+        path: /sellers
+        backend:
+          service:
+            name: service-sellers-app
+            port: 
+              number: 80
