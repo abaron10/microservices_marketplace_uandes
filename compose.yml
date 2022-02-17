@@ -50,10 +50,10 @@ services:
       - ecommerce-network
     environment:
       AGENDA_PATH: http://agenda:3020
-      ORDERS_PATH: http://orders:3030
-      PAYMENTS_PATH: http://payments:3040
-      SELLERS_PATH: http://sellers:3050
-      MONOLITH_PATH: http://monolith:3060
+      ORDERS_PATH: http://orders:3020
+      PAYMENTS_PATH: http://payments:3020
+      SELLERS_PATH: http://sellers:3020
+      MONOLITH_PATH: http://monolith:3000
 
 networks:
   ecommerce-network:
