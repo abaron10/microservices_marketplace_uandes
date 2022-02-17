@@ -41,5 +41,19 @@ services:
     networks:
       - ecommerce-network
 
+  pedidos:
+    build: ./pedidos
+    container_name: pedidos
+    ports:
+      - "3000:3000"
+    networks:
+      - ecommerce-network
+    environment:
+      AGENDA_PATH: http://agenda:3020
+      ORDERS_PATH: http://orders:3030
+      PAYMENTS_PATH: http://payments:3040
+      SELLERS_PATH: http://sellers:3050
+      MONOLITH_PATH: http://monolith:3060
+
 networks:
   ecommerce-network:
