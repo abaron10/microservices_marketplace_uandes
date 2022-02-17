@@ -45,7 +45,7 @@ services:
     build: ./pedidos
     container_name: pedidos
     ports:
-      - "3000:3000"
+      - "3000:3020"
     networks:
       - ecommerce-network
     environment:
