@@ -2,8 +2,15 @@ from flask import Blueprint, request
 from injector import inject
 import requests
 import json
+import os
+
 
 pedido_api = Blueprint('pedido_api', __name__)
+ORDERS_PATH = os.environ["ORDERS_PATH"]
+AGENDA_PATH = os.environ["AGENDA_PATH"]
+PAYMENTS_PATH = os.environ["PAYMENTS_PATH"]
+SELLERS_PATH = os.environ["SELLERS_PATH"]
+MONOLITH_PATH = os.environ["MONOLITH_PATH"]
 
 @inject
 @pedido_api.route('/', methods=['POST'])
@@ -11,27 +18,27 @@ def crear_pedido():
     data = request.get_json()
     # TODO: Validar autenticacion
     # TODO: Validar que exista el producto
-    order_response = requests.post("http://localhost:3030/orders", json=data)
+    order_response = requests.post(f"{ORDERS_PATH}/orders", json=data)
     order_id = order_response.json()["orderId"]
     user_id = order_response.json()["userId"]
     seller_id = order_response.json()["sellerId"]
     agenda_data = { "uuid": order_id }
-    agenda_response = requests.post("http://localhost:3020/agenda/sellers/" + seller_id, json=agenda_data)
+    agenda_response = requests.post(f"{AGENDA_PATH}/agenda/sellers/{seller_id}", json=agenda_data)
     # TODO: Mandar error si no tiene disponibilidad
     pago_data = { "order": { "uuid": order_id }, "user": { "uuid": user_id } }
-    pago_response = requests.post("http://localhost:3040/payments", json=pago_data)
+    pago_response = requests.post(f"{PAYMENTS_PATH}/payments", json=pago_data)
     return order_response.json(), 200
 
 @inject
 @pedido_api.route('/<pedido_id>', methods=['GET'])
 def dar_pedido(pedido_id: int):
-    order_response = requests.get("http://localhost:3030/orders/" + pedido_id)
+    order_response = requests.get(f"{ORDERS_PATH}/orders/{pedido_id}")
     seller_id = order_response.json()["sellerId"]
     item_id = order_response.json()["itemId"]
-    agenda_response = requests.get("http://localhost:3020/agenda/sellers/" + seller_id + "/order/" + pedido_id)
-    pago_response = requests.get("http://localhost:3040/payments/orders/" + pedido_id)
-    seller_response = requests.get("http://localhost:3050/sellers/" + seller_id)
-    item_response = requests.get("http://localhost:3060/producto/" + item_id)
+    agenda_response = requests.get(f"{AGENDA_PATH}/agenda/sellers/{seller_id}/order/{pedido_id}")
+    pago_response = requests.get(f"{PAYMENTS_PATH}/payments/orders/{pedido_id}")
+    seller_response = requests.get(f"{SELLERS_PATH}/sellers/{seller_id}")
+    item_response = requests.get(f"{MONOLITH_PATH}/producto/{item_id}")
 
     agenda_json = agenda_response.json()
     pago_json = pago_response.json()
@@ -58,7 +65,7 @@ def ping():
 @inject
 @pedido_api.route('/reset', methods=['POST'])
 def reset():
-    requests.post("http://localhost:3030/orders/reset").text
-    requests.post("http://localhost:3020/agenda/reset").text
-    requests.post("http://localhost:3040/payments/reset").text
+    requests.post(f"{ORDERS_PATH}/orders/reset")
+    requests.post(f"{AGENDA_PATH}/agenda/reset")
+    requests.post(f"{PAYMENTS_PATH}/payments/reset")
     return "OK", 200
