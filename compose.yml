@@ -33,5 +33,13 @@ services:
     networks:
       - ecommerce-network
 
+  monolith:
+    image: us-central1-docker.pkg.dev/miso-339504/cloud-project/app-image:1.0
+    container_name: monolith
+    ports:
+      - "3060:3000"
+    networks:
+      - ecommerce-network
+
 networks:
   ecommerce-network:
