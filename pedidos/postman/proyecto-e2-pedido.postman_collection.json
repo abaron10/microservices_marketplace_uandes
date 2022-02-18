@@ -1,0 +1,183 @@
+{
+	"info": {
+		"_postman_id": "1f4654b4-4a58-4809-ac38-c00415678337",
+		"name": "proyecto-e2-pedido",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Check ping",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"item\": {\n        \"uuid\":\"56d1e02a-e9a6-4c1b-b36e-1698d79bdb59\"\n    },\n    \"seller\": {\n        \"uuid\": \"89e3c8eb-18b7-43f4-ab14-79cd737432a3\"\n    },\n    \"user\": {\n        \"uuid\": \"16225b1f-e9c2-4cac-9e18-81065f3366b0\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{protocol}}://{{server}}/pedido/health/ping",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"pedido",
+						"health",
+						"ping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear pedido",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"const orderUuid = jsonData[\"orderId\"];",
+							"",
+							"if(orderUuid) {",
+							"    pm.collectionVariables.set(\"order_uuid\", orderUuid);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"item\": {\n        \"uuid\":\"{{item_uuid}}\"\n    },\n    \"seller\": {\n        \"uuid\": \"{{seller_uuid}}\"\n    },\n    \"user\": {\n        \"uuid\": \"{{user_uuid}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{protocol}}://{{server}}/pedido",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"pedido"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check reset",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{protocol}}://{{server}}/pedido/reset",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"pedido",
+						"reset"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check pedido",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{server}}/pedido/{{order_uuid}}",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"pedido",
+						"{{order_uuid}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "server",
+			"value": "localhost:3090",
+			"type": "string"
+		},
+		{
+			"key": "protocol",
+			"value": "http",
+			"type": "string"
+		},
+		{
+			"key": "seller_uuid",
+			"value": "89e3c8eb-18b7-43f4-ab14-79cd737432a3",
+			"type": "string"
+		},
+		{
+			"key": "item_uuid",
+			"value": "56d1e02a-e9a6-4c1b-b36e-1698d79bdb59",
+			"type": "string"
+		},
+		{
+			"key": "user_uuid",
+			"value": "16225b1f-e9c2-4cac-9e18-81065f3366b0",
+			"type": "string"
+		},
+		{
+			"key": "order_uuid",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
