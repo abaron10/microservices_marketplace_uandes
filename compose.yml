@@ -40,7 +40,7 @@ services:
     networks:
       - ecommerce-network
     environment:
-      SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:admin@34.67.178.96/postgres
+      APPLICATION_SECRETS: ./appsecrets.cfg
   pedidos:
     build: ./pedidos
     container_name: pedidos
