@@ -16,7 +16,21 @@ MONOLITH_PATH = os.environ["MONOLITH_PATH"]
 @inject
 @pedido_api.route('/', methods=['POST'])
 def crear_pedido():
+
+    token = request.headers["x-auth-token"]
+
+    validation_login = requests.get(f"{MONOLITH_PATH}/sesion/{token}")
+
+    if validation_login.status_code != 200:
+        return validation_login.json(), 401
+
     data = request.get_json()
+    item_id = data["item"]["uuid"]
+    exist_product = requests.get(f"{MONOLITH_PATH}/producto/{item_id}")
+
+    if exist_product.status_code != 200:
+        return exist_product.json(),404
+
     order_response = requests.post(f"{ORDERS_PATH}/orders", json=data)
 
     if order_response.status_code != 201:
@@ -45,6 +59,11 @@ def crear_pedido():
 @inject
 @pedido_api.route('/<pedido_id>', methods=['GET'])
 def dar_pedido(pedido_id: int):
+    token = request.headers["x-auth-token"] 
+    validation_login = requests.get(f"{MONOLITH_PATH}/sesion/{token}")
+    if validation_login.status_code != 200:
+        return validation_login.json(), 401
+
     order_response = requests.get(f"{ORDERS_PATH}/orders/{pedido_id}")
     seller_id = order_response.json()["sellerId"]
     item_id = order_response.json()["itemId"]
