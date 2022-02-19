@@ -5,6 +5,7 @@ import json
 import os
 
 
+
 pedido_api = Blueprint('pedido_api', __name__)
 ORDERS_PATH = os.environ["ORDERS_PATH"]
 AGENDA_PATH = os.environ["AGENDA_PATH"]
@@ -16,17 +17,29 @@ MONOLITH_PATH = os.environ["MONOLITH_PATH"]
 @pedido_api.route('/', methods=['POST'])
 def crear_pedido():
     data = request.get_json()
-    # TODO: Validar autenticacion
-    # TODO: Validar que exista el producto
     order_response = requests.post(f"{ORDERS_PATH}/orders", json=data)
+
+    if order_response.status_code != 201:
+        return order_response.json(),503
+
     order_id = order_response.json()["orderId"]
     user_id = order_response.json()["userId"]
     seller_id = order_response.json()["sellerId"]
     agenda_data = { "uuid": order_id }
     agenda_response = requests.post(f"{AGENDA_PATH}/agenda/sellers/{seller_id}", json=agenda_data)
-    # TODO: Mandar error si no tiene disponibilidad
+
+    if agenda_response.status_code != 201:
+        requests.delete(f"{ORDERS_PATH}/orders/{order_id}")
+        return agenda_response.json(),412
+
     pago_data = { "order": { "uuid": order_id }, "user": { "uuid": user_id } }
     pago_response = requests.post(f"{PAYMENTS_PATH}/payments", json=pago_data)
+
+    if pago_response.status_code != 201:
+        requests.delete(f"{AGENDA_PATH}/agenda/sellers/{seller_id}/order/{order_id}")
+        requests.delete(f"{ORDERS_PATH}/orders/{order_id}")
+        return pago_response.json(),412
+    print(f"{order_id}")
     return order_response.json(), 200
 
 @inject

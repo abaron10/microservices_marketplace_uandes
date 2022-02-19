@@ -32,15 +32,15 @@ services:
       - "3050:3020"
     networks:
       - ecommerce-network
-
   monolith:
-    image: us-central1-docker.pkg.dev/miso-339504/cloud-project/app-image:1.0
+    image: us-central1-docker.pkg.dev/cloud-native-340317/uniandes-misw-native-s2-tutorial-app/app-image-2:1.0
     container_name: monolith
     ports:
       - "3060:3000"
     networks:
       - ecommerce-network
-
+    environment:
+      SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:admin@34.67.178.96/postgres
   pedidos:
     build: ./pedidos
     container_name: pedidos
