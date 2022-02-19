@@ -33,7 +33,7 @@ services:
     networks:
       - ecommerce-network
   monolith:
-    image: us-central1-docker.pkg.dev/cloud-native-340317/uniandes-misw-native-s2-tutorial-app/app-image-2:1.0
+    image: us-central1-docker.pkg.dev/cloud-native-340317/uniandes-misw-native-s2-tutorial-app-3/app-image:1.0
     container_name: monolith
     ports:
       - "3060:3000"
