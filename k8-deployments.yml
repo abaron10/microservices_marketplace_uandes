@@ -28,10 +28,6 @@ spec:
             - containerPort: 3020
           imagePullPolicy: Always
 
-    
-         
-
-
 ---
 apiVersion: cloud.google.com/v1
 kind: BackendConfig
@@ -59,7 +55,6 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 3020
-      # 30000 - 32767
       nodePort: 31007
 ---
 # ORDERS APP
@@ -241,20 +236,18 @@ spec:
       targetPort: 3020
       nodePort: 31010
 
-
-#PEDIDOS
----
+#MONOLITH
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pedidos
+  name: monolith-app
   labels:
-    app: pedidos
+    app: monolith-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: pedidos
+      app: monolith-app
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -263,84 +256,11 @@ spec:
   template:
     metadata:
       labels:
-        app: pedidos
+        app: monolith-app
     spec:
       containers:
-        - name: pedidos-app
-          image: us-central1-docker.pkg.dev/cloud-native-340317/uniandes-misw-native-s2-tutorial-app-3/app-image-pedidos:1.0 
-          env:
-            - name: AGENDA_PATH
-              value: http://service-agenda-app
-          
-            - name: ORDERS_PATH
-              value: http://service-orders-app
-            
-            - name: PAYMENTS_PATH
-              value: http://service-payments-app
-            
-            - name: SELLERS_PATH 
-              value: http://service-sellers-app
-
-            - name: MONOLITH_PATH 
-              value: http://service-monolito-app
-          ports:
-            - containerPort: 3020
-          imagePullPolicy: Always
-
----
-apiVersion: cloud.google.com/v1
-kind: BackendConfig
-metadata:
-  name: pedidos-backend-config
-spec:
-  healthCheck:
-    checkIntervalSec: 30
-    port: 3020
-    type: HTTP
-    requestPath: /pedidos/health/ping
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: service-pedidos-app
-  annotations:
-    cloud.google.com/backend-config: '{"default": "pedidos-backend-config"}'
-spec:
-  type: NodePort
-  selector:
-    app: pedidos-app
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 3020
-      nodePort: 31011
-
-#MONOLITO
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: monolito
-  labels:
-    app: monolito
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: monolito
-  strategy:
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
-    type: RollingUpdate
-  template:
-    metadata:
-      labels:
-        app: monolito
-    spec:
-      containers:
-        - name: monolito-app
-          image: us-central1-docker.pkg.dev/cloud-native-340317/uniandes-misw-native-s2-tutorial-app-3/app-image:1.0 
+        - name: monolith-app
+          image: us-central1-docker.pkg.dev/cloud-native-340317/uniandes-misw-native-s2-tutorial-app-3/app-image:1.0
           ports:
             - containerPort: 3000
           imagePullPolicy: Always
@@ -349,7 +269,7 @@ spec:
 apiVersion: cloud.google.com/v1
 kind: BackendConfig
 metadata:
-  name: monolito-backend-config
+  name: monolith-backend-config
 spec:
   healthCheck:
     checkIntervalSec: 30
@@ -360,27 +280,94 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: monolito-pedidos-app
+  name: service-monolith-app
   annotations:
-    cloud.google.com/backend-config: '{"default": "monolito-backend-config"}'
+    cloud.google.com/backend-config: '{"default": "monolith-backend-config"}'
 spec:
   type: NodePort
   selector:
-    app: monolito-app
+    app: monolith-app
   ports:
     - protocol: TCP
       port: 80
       targetPort: 3000
-      nodePort: 31012
+      nodePort: 31015
+
+#PEDIDO
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pedido-app
+  labels:
+    app: pedido-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pedido-app
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: pedido-app
+    spec:
+      containers:
+        - name: pedido-app
+          image: us-central1-docker.pkg.dev/cloud-native-340317/uniandes-misw-native-s2-tutorial-app-3/app-image-pedidos:1.0
+          ports:
+            - containerPort: 3090
+          imagePullPolicy: Always
+          env:
+            - name: AGENDA_PATH
+              value: http://service-agenda-app
+            - name: ORDERS_PATH
+              value: http://service-orders-app
+            - name: PAYMENTS_PATH
+              value: http://service-payments-app
+            - name: SELLERS_PATH 
+              value: http://service-sellers-ap
+            - name: MONOLITH_PATH 
+              value: http://service-monolith-app
+---
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: pedido-backend-config
+spec:
+  healthCheck:
+    checkIntervalSec: 30
+    port: 3090
+    type: HTTP
+    requestPath: /pedido/health/ping
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: service-pedido-app
+  annotations:
+    cloud.google.com/backend-config: '{"default": "pedido-backend-config"}'
+spec:
+  type: NodePort
+  selector:
+    app: pedido-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3090
+      nodePort: 31017
 
 # INGRESS
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: gateway-ingress
+  name: gateway-ingress-5
   labels:
-    name: gateway-ingress
+    name: gateway-ingress-5
 spec:
   rules:
   - http:
@@ -415,10 +402,10 @@ spec:
               number: 80
 
       - pathType: Prefix
-        path: /pedidos
+        path: /pedido
         backend:
           service:
-            name: service-pedidos-app
+            name: service-pedido-app
             port: 
               number: 80
 
@@ -426,7 +413,7 @@ spec:
         path: /sesion
         backend:
           service:
-            name: service-monolito-app
+            name: service-monolith-app
             port: 
               number: 80
 
@@ -434,7 +421,7 @@ spec:
         path: /login
         backend:
           service:
-            name: service-monolito-app
+            name: service-monolith-app
             port: 
               number: 80
       
@@ -442,7 +429,7 @@ spec:
         path: /busqueda
         backend:
           service:
-            name: service-monolito-app
+            name: service-monolith-app
             port: 
               number: 80
         
@@ -450,7 +437,7 @@ spec:
         path: /landing
         backend:
           service:
-            name: service-monolito-app
+            name: service-monolith-app
             port: 
               number: 80
 
@@ -458,6 +445,6 @@ spec:
         path: /producto
         backend:
           service:
-            name: service-monolito-app
+            name: service-monolith-app
             port: 
               number: 80
