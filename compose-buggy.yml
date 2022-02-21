@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  agenda:
+    image: ghcr.io/misw-4301-desarrollo-apps-en-la-nube/agenda-service-p2:buggy
+    container_name: agenda
+    ports:
+      - "3020:3020"
+    networks:
+      - ecommerce-network
+    environment:
+      - SNOOZE_BASE_TIME=500
+      - SNOOZE_REST_STEP= 5
+
+  orders:
+    image: ghcr.io/misw-4301-desarrollo-apps-en-la-nube/orders-service-p2:buggy
+    container_name: orders
+    ports:
+      - "3030:3020"
+    networks:
+      - ecommerce-network
+    environment:
+      - SNOOZE_BASE_TIME=500
+      - SNOOZE_REST_STEP= 5
+
+  payments:
+    image: ghcr.io/misw-4301-desarrollo-apps-en-la-nube/payments-service-p2:buggy
+    container_name: payments
+    ports:
+      - "3040:3020"
+    networks:
+      - ecommerce-network
+    environment:
+      - SNOOZE_BASE_TIME=500
+      - SNOOZE_REST_STEP= 5
+
+  sellers:
+    image: ghcr.io/misw-4301-desarrollo-apps-en-la-nube/sellers-service-p2:buggy
+    container_name: sellers
+    ports:
+      - "3050:3020"
+    networks:
+      - ecommerce-network
+    environment:
+      - SNOOZE_BASE_TIME=500
+      - SNOOZE_REST_STEP= 5
+
+networks:
+  ecommerce-network:
