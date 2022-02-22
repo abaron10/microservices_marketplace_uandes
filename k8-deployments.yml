@@ -82,7 +82,7 @@ spec:
     spec:
       containers:
         - name: orders-app
-          image: ghcr.io/misw-4301-desarrollo-apps-en-la-nube/orders-service-p2:0.1.0
+          image: ghcr.io/misw-4301-desarrollo-apps-en-la-nube/orders-service-p2:buggy
           ports:
             - containerPort: 3020
                 
@@ -260,7 +260,7 @@ spec:
     spec:
       containers:
         - name: mono-app
-          image: us-central1-docker.pkg.dev/miso-339504/cloud-project/app-image:1.0
+          image: us-central1-docker.pkg.dev/cloud-native-340317/uniandes-misw-native-s2-tutorial-app-3/app-image-monolito:1.0
           ports:
             - containerPort: 3020
           imagePullPolicy: Always
