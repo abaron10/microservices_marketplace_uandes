@@ -240,14 +240,14 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: monolith-app
+  name: mono-app
   labels:
-    app: monolith-app
+    app: mono-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: monolith-app
+      app: mono-app
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -256,42 +256,43 @@ spec:
   template:
     metadata:
       labels:
-        app: monolith-app
+        app: mono-app
     spec:
       containers:
-        - name: monolith-app
-          image: us-central1-docker.pkg.dev/cloud-native-340317/uniandes-misw-native-s2-tutorial-app-3/app-image:1.0
+        - name: mono-app
+          image: us-central1-docker.pkg.dev/miso-339504/cloud-project/app-image:1.0
           ports:
-            - containerPort: 3000
+            - containerPort: 3020
           imagePullPolicy: Always
-
+          env:
+            - name: FLASK_PORT
+              value: "3020"
 ---
 apiVersion: cloud.google.com/v1
 kind: BackendConfig
 metadata:
-  name: monolith-backend-config
+  name: mono-backend-config
 spec:
   healthCheck:
     checkIntervalSec: 30
-    port: 3000
+    port: 3020
     type: HTTP
     requestPath: /landing
 ---
 kind: Service
 apiVersion: v1
 metadata:
-  name: service-monolith-app
+  name: service-mono-app
   annotations:
-    cloud.google.com/backend-config: '{"default": "monolith-backend-config"}'
+    cloud.google.com/backend-config: '{"default": "mono-backend-config"}'
 spec:
   type: NodePort
   selector:
-    app: monolith-app
+    app: mono-app
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 3000
-      nodePort: 31015
+      targetPort: 31019
 
 #PEDIDO
 apiVersion: apps/v1
@@ -317,7 +318,7 @@ spec:
     spec:
       containers:
         - name: pedido-app
-          image: us-central1-docker.pkg.dev/cloud-native-340317/uniandes-misw-native-s2-tutorial-app-3/app-image-pedidos:1.0
+          image: us-central1-docker.pkg.dev/cloud-native-340317/uniandes-misw-native-s2-tutorial-app-3/app-image-pedidos:1.1
           ports:
             - containerPort: 3090
           imagePullPolicy: Always
@@ -331,7 +332,7 @@ spec:
             - name: SELLERS_PATH 
               value: http://service-sellers-ap
             - name: MONOLITH_PATH 
-              value: http://service-monolith-app
+              value: http://service-mono-app
 ---
 apiVersion: cloud.google.com/v1
 kind: BackendConfig
@@ -365,9 +366,9 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: gateway-ingress-5
+  name: gateway-ingress-7
   labels:
-    name: gateway-ingress-5
+    name: gateway-ingress-7
 spec:
   rules:
   - http:
@@ -413,7 +414,7 @@ spec:
         path: /sesion
         backend:
           service:
-            name: service-monolith-app
+            name: service-mono-app
             port: 
               number: 80
 
@@ -421,7 +422,7 @@ spec:
         path: /login
         backend:
           service:
-            name: service-monolith-app
+            name: service-mono-app
             port: 
               number: 80
       
@@ -429,7 +430,7 @@ spec:
         path: /busqueda
         backend:
           service:
-            name: service-monolith-app
+            name: service-mono-app
             port: 
               number: 80
         
@@ -437,7 +438,7 @@ spec:
         path: /landing
         backend:
           service:
-            name: service-monolith-app
+            name: service-mono-app
             port: 
               number: 80
 
@@ -445,6 +446,6 @@ spec:
         path: /producto
         backend:
           service:
-            name: service-monolith-app
+            name: service-mono-app
             port: 
               number: 80
