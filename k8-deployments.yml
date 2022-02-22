@@ -267,6 +267,16 @@ spec:
           env:
             - name: FLASK_PORT
               value: "3020"
+            - name: "APPLICATION_SECRETS"
+              value: "/var/app-secrets/appsecrets.cfg"
+          volumeMounts:
+            - mountPath: "/var/app-secrets"
+              name: appsecrets-volume
+              readOnly: true
+      volumes:
+        - name: appsecrets-volume
+          secret:
+            secretName: appsecrets
 ---
 apiVersion: cloud.google.com/v1
 kind: BackendConfig
