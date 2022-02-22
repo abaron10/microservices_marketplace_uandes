@@ -235,7 +235,7 @@ spec:
       port: 80
       targetPort: 3020
       nodePort: 31010
-
+---
 #MONOLITH
 apiVersion: apps/v1
 kind: Deployment
@@ -291,9 +291,10 @@ spec:
     app: mono-app
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 31019
-
+      port: 8080
+      targetPort: 3020
+      nodePort: 31019
+---
 #PEDIDO
 apiVersion: apps/v1
 kind: Deployment
@@ -366,9 +367,9 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: gateway-ingress-7
+  name: gateway-ingress-8
   labels:
-    name: gateway-ingress-7
+    name: gateway-ingress-8
 spec:
   rules:
   - http:
@@ -416,7 +417,7 @@ spec:
           service:
             name: service-mono-app
             port: 
-              number: 80
+              number: 8080
 
       - pathType: Prefix
         path: /login
@@ -424,7 +425,7 @@ spec:
           service:
             name: service-mono-app
             port: 
-              number: 80
+              number: 8080
       
       - pathType: Prefix
         path: /busqueda
@@ -432,7 +433,7 @@ spec:
           service:
             name: service-mono-app
             port: 
-              number: 80
+              number: 8080
         
       - pathType: Prefix
         path: /landing
@@ -440,7 +441,7 @@ spec:
           service:
             name: service-mono-app
             port: 
-              number: 80
+              number: 8080
 
       - pathType: Prefix
         path: /producto
@@ -448,4 +449,4 @@ spec:
           service:
             name: service-mono-app
             port: 
-              number: 80
+              number: 8080
