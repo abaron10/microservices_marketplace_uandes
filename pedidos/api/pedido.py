@@ -128,19 +128,19 @@ def esta_abierto(circuit, name):
 @inject
 @pedido_api.route('/', methods=['POST'])
 def crear_pedido():
-    #token = request.headers["x-auth-token"]
+    token = request.headers["x-auth-token"]
 
-    #validation_login = requests.get(f"{MONOLITH_PATH}/sesion/{token}")
+    validation_login = requests.get(f"{MONOLITH_PATH}/sesion/{token}")
 
-    #if validation_login.status_code != 200:
-    #    return validation_login.json(), 401
+    if validation_login.status_code != 200:
+        return validation_login.json(), 401
 
     data = request.get_json()
-    #item_id = data["item"]["uuid"]
-    #exist_product = requests.get(f"{MONOLITH_PATH}/producto/{item_id}")
+    item_id = data["item"]["uuid"]
+    exist_product = requests.get(f"{MONOLITH_PATH}/producto/{item_id}")
 
-    #if exist_product.status_code != 200:
-    #    return exist_product.json(),404
+    if exist_product.status_code != 200:
+        return exist_product.json(),404
 
     cod_rta,order_response = create_order(data)
     if cod_rta != 201:
@@ -181,10 +181,10 @@ def crear_pedido():
 @inject
 @pedido_api.route('/<pedido_id>', methods=['GET'])
 def dar_pedido(pedido_id: int):
-    #token = request.headers["x-auth-token"] 
-    #validation_login = requests.get(f"{MONOLITH_PATH}/sesion/{token}")
-    #if validation_login.status_code != 200:
-    #    return validation_login.json(), 401
+    token = request.headers["x-auth-token"] 
+    validation_login = requests.get(f"{MONOLITH_PATH}/sesion/{token}")
+    if validation_login.status_code != 200:
+        return validation_login.json(), 401
 
     cod_rta,order_response = get_order(pedido_id)
     if cod_rta != 201:
